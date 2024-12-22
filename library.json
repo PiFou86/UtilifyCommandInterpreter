@@ -1,0 +1,49 @@
+{
+  "name": "UtilifyCommandInterpreter",
+  "version": "1.0.0",
+  "description": "Utilify Command Interpreter is a lightweight and flexible library for parsing and executing commands on ESP32 and Arduino Uno. Designed for embedded systems, it provides an intuitive way to define and handle commands, enabling efficient communication between devices and users. It supports serial input and can be extended for custom implementations.",
+  "keywords": [
+    "command interpreter",
+    "platformio",
+    "embedded"
+  ],
+  "authors": [
+    {
+      "name": "Pierre-François Léon",
+      "email": "pierrefrancois.leon@gmail.com",
+      "maintainer": true
+    }
+  ],
+  "excludeFiles": [
+    "main.cpp",
+    "CustomCommandInterpreter.cpp",
+    "CustomCommandInterpreter.h"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PiFou86/UtilifyCommandInterpreter.git"
+  },
+  "license": "MIT",
+  "frameworks": [
+    "arduino"
+  ],
+  "platforms": [
+    "atmelavr",
+    "espressif32"
+  ],
+  "dependencies": [
+    {
+      "name": "Utilify",
+      "url": "https://github.com/PiFou86/Utilify.git",
+      "platforms": "*"
+    },
+    {
+      "name": "WiFi",
+      "platforms": "espressif32"
+    },
+    {
+      "name": "Wire",
+      "platforms": "espressif32"
+    }
+  ]
+}
