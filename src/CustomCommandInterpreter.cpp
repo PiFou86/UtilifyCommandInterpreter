@@ -4,15 +4,15 @@
 
 CustomCommandInterpreter::CustomCommandInterpreter(Stream &stream)
     : BaseCommandInterpreter(stream) {
-  addCommand("custom", "[parameters]");
+  addCommand("test", "[parameters]");
 }
 
 bool CustomCommandInterpreter::interpret(const String &command,
                                            const String &parameters) {
   bool error = false;
 
-  if (command == "custom") {
-    Serial.println(String(F("custom command executed with parameters: ")) + parameters);
+  if (command == "test") {
+    Serial.println(String(F("test command executed with parameters: ")) + parameters);
   } else {
     error = !BaseCommandInterpreter::interpret(command, parameters);
   }
