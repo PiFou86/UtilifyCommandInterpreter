@@ -30,8 +30,13 @@ BaseCommandInterpreter::BaseCommandInterpreter(Stream &stream)
   addCommand("scan", "i2c");
 #endif
   addCommand("help", "");
+}
 
-  m_stream.print(F("#"));
+void BaseCommandInterpreter::begin() {
+  m_stream.println(F("Welcome to Utilify Command Interpreter"));
+  m_stream.println(F("Type 'help' to get a list of available commands"));
+  m_stream.println();
+  m_stream.print(F("# "));
 }
 
 void BaseCommandInterpreter::printHelp() {
@@ -59,7 +64,7 @@ void BaseCommandInterpreter::tick() {
       m_lastSerialInput.trim();
       this->executeCommand(m_lastSerialInput);
       this->m_lastSerialInput = "";
-      m_stream.print(F("#"));
+      m_stream.print(F("# "));
     } else if (c == '\b') {
       if (this->m_lastSerialInput.length() > 0) {
         this->m_lastSerialInput = this->m_lastSerialInput.substring(
@@ -111,7 +116,14 @@ bool BaseCommandInterpreter::interpret(const String &command,
     ESP.restart();
   }
 #endif
-  else if (command == "scan") {
+  else if (command == "42") {
+    m_stream.println(F("Beaucoup se sont perdus dans mes ailes; tous n'ont pas vu les mêmes choses, mais la folie était l'une d'entre elles !"));
+    m_stream.println(F("Many have lost themselves in my wings; not all saw the same things, but madness was one of them !"));
+    m_stream.println(F("Muchos se han perdido en mis alas; no todos vieron las mismas cosas, pero la locura fue una de ellas !"));
+    m_stream.println(F("Muitos se perderam em minhas asas; nem todos viram as mesmas coisas, mas a loucura foi uma delas !"));
+    m_stream.println(F("Molti si sono persi nelle mie ali; non tutti hanno visto le stesse cose, ma la follia era una di esse !"));
+    m_stream.println(F("Viele haben sich in meinen Flügeln verloren; nicht alle sahen dasselbe, aber der Wahnsinn war einer davon !"));
+  } else if (command == "scan") {
     String deviceType = parameters;
 
     if (deviceType == "i2c") {
@@ -152,7 +164,7 @@ bool BaseCommandInterpreter::interpret(const String &command,
 #endif
   else if (command == "help") {
     printHelp();
-  } else {
+  } else if (command != "") {
     m_stream.println(String(F("Unknown command: ")) + command);
     error = true;
   }
@@ -282,14 +294,14 @@ void BaseCommandInterpreter::handleAutocomplete() {
     } else {
       m_lastSerialInput = mainCommand + " " + matches[0] + " ";
     }
-    m_stream.print("\r#");
+    m_stream.print("\r# ");
     m_stream.print(m_lastSerialInput);
   } else {
     m_stream.println();
     for (size_t i = 0; i < matches.size(); i++) {
       m_stream.println("  " + matches[i]);
     }
-    m_stream.print("#");
+    m_stream.print("# ");
     m_stream.print(m_lastSerialInput);
   }
 }

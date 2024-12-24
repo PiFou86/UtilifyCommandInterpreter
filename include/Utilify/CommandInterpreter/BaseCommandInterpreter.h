@@ -42,6 +42,7 @@ class BaseCommandInterpreter {
 
  public:
   BaseCommandInterpreter(Stream &stream);
+  virtual void begin();
   void tick();
   bool executeCommand(const String &command);
 };

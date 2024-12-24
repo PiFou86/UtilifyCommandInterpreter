@@ -25,7 +25,6 @@
 
 #include <Utilify/CommandInterpreter/Device.h>
 
-
 void printWiFiInfo(Stream &stream) {
     wifi_config_t conf;
     esp_netif_t *netif_sta = esp_netif_get_handle_from_ifkey("WIFI_STA_DEF");

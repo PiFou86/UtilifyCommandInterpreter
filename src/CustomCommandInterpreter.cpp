@@ -13,11 +13,6 @@ bool CustomCommandInterpreter::interpret(const String &command,
 
   if (command == "custom") {
     Serial.println(String(F("custom command executed with parameters: ")) + parameters);
-  } else if (command == "help") {
-    Serial.println(F(""));
-    Serial.println(F("  custom [parameters]"));
-    Serial.println(F(""));
-    BaseCommandInterpreter::interpret(command, parameters);
   } else {
     error = !BaseCommandInterpreter::interpret(command, parameters);
   }
