@@ -4,7 +4,7 @@
 
 CustomCommandInterpreter::CustomCommandInterpreter(Stream &stream)
     : BaseCommandInterpreter(stream) {
-  ;
+  addCommand("custom", "[parameters]");
 }
 
 bool CustomCommandInterpreter::interpret(const String &command,

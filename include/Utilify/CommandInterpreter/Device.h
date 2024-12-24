@@ -7,15 +7,15 @@
 #include <Utilify/CommandInterpreter/SimpleCollection.h>
 
 #ifdef ESP32
+#include <vector>
+#endif
+
 struct WiFiNetwork {
   String ssid;
   long rssi;
   byte encryptionType;
   String bssid;
 };
-
-#include <vector>
-#endif
 
 class Device {
  public:
