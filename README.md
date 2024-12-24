@@ -77,6 +77,42 @@ Output:
 # scan
 ```
 
+### Example Usage
+
+```
+Welcome to Utilify Command Interpreter
+Type 'help' to get a list of available commands
+
+# echo "Vive les crêpes !"
+echo : "Vive les crêpes !"
+# id 
+ID: 5eb7dbee
+# network
+WiFi STA:
+  - SSID: Erable
+  - Password: TastyMapleSyrup_ChocolatineIsTheBest
+  - IP: 192.168.3.214
+  - Netmask: 255.255.0.0
+  - Gateway: 192.168.3.1
+  - MAC: BC:DC:A7:3F:D4:D4
+  - BSSID: C4:EB:F4:F7:8E:A1
+  - DNS 0: 192.168.3.1
+  - DNS 1: 0.0.0.0
+
+WiFi AP:
+  - SSID: Erable
+  - Password: TastyMapleSyrup_ChocolatineIsTheBest
+  - IP: 192.168.23.1
+  - Netmask: 255.255.255.0
+  - Gateway: 192.168.23.1
+  - MAC: BC:DC:A7:3F:D4:D6
+  - BSSID: BC:DC:A7:3F:D4:D6
+
+# s
+  set
+  scan
+```
+
 ### Advanced Usage - Adding Custom Commands
 
 You can extend the library by adding custom commands and their behavior. 
