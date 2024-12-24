@@ -160,6 +160,6 @@ The library depends on the following:
 
 ### Author
 
-Pierre-François Léon
-🔗 [Linkedin](https://www.linkedin.com/in/pierrefrancoisleon/)
+**Pierre-François Léon**  
+🔗 [Linkedin](https://www.linkedin.com/in/pierrefrancoisleon/)  
 🔗 [GitHub Profile](https://github.com/PiFou86)
