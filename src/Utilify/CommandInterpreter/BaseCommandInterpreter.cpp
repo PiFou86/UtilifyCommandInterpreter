@@ -6,8 +6,6 @@
 
 #ifdef ESP32
 #include <Utilify/CommandInterpreter/ESP32Utils.h>
-
-#include <vector>
 #endif
 
 #ifdef UTILIFY_LOGGER
@@ -127,11 +125,7 @@ bool BaseCommandInterpreter::interpret(const String &command,
     String deviceType = parameters;
 
     if (deviceType == "i2c") {
-#ifdef ARDUINO_AVR_UNO
-      SimpleCollection<uint16_t> i2cAddresses = Device::getI2CAddresses();
-#elif ESP32
-      std::vector<uint16_t> i2cAddresses = Device::getI2CAddresses();
-#endif
+      vector<uint16_t> i2cAddresses = Device::scanI2CAddresses();
       m_stream.println(F("I2C addresses:"));
       for (size_t i = 0; i < i2cAddresses.size(); i++) {
         m_stream.println(
@@ -142,7 +136,7 @@ bool BaseCommandInterpreter::interpret(const String &command,
     }
 #ifdef ESP32
     else if (deviceType == "wifi") {
-      printWiFiScan(m_stream);
+      ESP32Utils::printWiFiScan(m_stream);
     }
 #endif
     else {
@@ -157,9 +151,9 @@ bool BaseCommandInterpreter::interpret(const String &command,
                      String(F(" Hz")));
     m_stream.println(String(F("Flash mode: ")) + ESP.getFlashChipMode());
 
-    printPartitionInfo(m_stream);
+    ESP32Utils::printPartitionInfo(m_stream);
   } else if (command == "network") {
-    printWiFiInfo(m_stream);
+    ESP32Utils::printWiFiInfo(m_stream);
   }
 #endif
   else if (command == "help") {
@@ -260,11 +254,7 @@ void BaseCommandInterpreter::handleAutocomplete() {
     subCommand.trim();
   }
 
-#ifdef ESP32
-  std::vector<String> matches;
-#else
-  SimpleCollection<String> matches;
-#endif
+  vector<String> matches;
 
   if (subCommand == "") {
     for (size_t i = 0; i < m_commands.size(); i++) {

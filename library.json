@@ -35,6 +35,7 @@
     {
       "name": "Utilify",
       "url": "https://github.com/PiFou86/Utilify.git",
+      "version": "main",
       "platforms": "*"
     },
     {

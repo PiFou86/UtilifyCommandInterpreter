@@ -9,27 +9,19 @@
 
 #include <Utilify/CommandInterpreter/HasOptionalLibs.h>
 
-#include <Utilify/CommandInterpreter/SimpleCollection.h>
+#include <Utilify/BasicVector.h>
 
 struct Command {
  public:
   String command;
-#ifdef ESP32
-  std::vector<String> parameters;
-#else
-  SimpleCollection<String> parameters;
-#endif
+  vector<String> parameters;
 };
 
 class BaseCommandInterpreter {
  private:
   Stream &m_stream;
   String m_lastSerialInput;
-  #ifdef ESP32
-  std::vector<Command> m_commands;
-  #else
-  SimpleCollection<Command> m_commands;
-  #endif
+  vector<Command> m_commands;
 
   void handleAutocomplete();
 

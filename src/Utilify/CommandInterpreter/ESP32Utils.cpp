@@ -13,7 +13,6 @@
 #include <lwip/netdb.h>
 #include <ping/ping.h>
 
-
 #include <esp_partition.h>
 #include <LittleFS.h>
 
@@ -25,7 +24,7 @@
 
 #include <Utilify/CommandInterpreter/Device.h>
 
-void printWiFiInfo(Stream &stream) {
+void ESP32Utils::printWiFiInfo(Stream &stream) {
     wifi_config_t conf;
     esp_netif_t *netif_sta = esp_netif_get_handle_from_ifkey("WIFI_STA_DEF");
     esp_netif_t *netif_ap = esp_netif_get_handle_from_ifkey("WIFI_AP_DEF");
@@ -95,7 +94,7 @@ void printWiFiInfo(Stream &stream) {
     stream.println("");
 }
 
-void printPartitionInfo(Stream &stream) {
+void ESP32Utils::printPartitionInfo(Stream &stream) {
     const esp_partition_t *partition = NULL;
     esp_partition_iterator_t it = esp_partition_find(ESP_PARTITION_TYPE_ANY, ESP_PARTITION_SUBTYPE_ANY, NULL);
 
@@ -137,8 +136,8 @@ void printPartitionInfo(Stream &stream) {
     esp_partition_iterator_release(it);
 }
 
-void printWiFiScan(Stream &stream) {
-    std::vector<WiFiNetwork> networks = Device::getWiFiNetworks();
+void ESP32Utils::printWiFiScan(Stream &stream) {
+    vector<WiFiNetwork> networks = ESP32Utils::getWiFiNetworks();
       stream.println(F("Wifi networks:"));
       for (size_t i = 0; i < networks.size(); i++) {
         String encryption = "unknown";
@@ -170,5 +169,19 @@ void printWiFiScan(Stream &stream) {
             String(F("% - BSSID: ")) + networks[i].bssid);
       }
       stream.println("");
+}
+
+vector<WiFiNetwork> ESP32Utils::getWiFiNetworks() {
+  vector<WiFiNetwork> networks;
+  WiFi.scanNetworks();
+  for (int i = 0; i < WiFi.scanComplete(); i++) {
+    WiFiNetwork network;
+    network.ssid = WiFi.SSID(i);
+    network.rssi = WiFi.RSSI(i);
+    network.encryptionType = WiFi.encryptionType(i);
+    network.bssid = WiFi.BSSIDstr(i);
+    networks.push_back(network);
+  }
+  return networks;
 }
 #endif
