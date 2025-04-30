@@ -58,7 +58,7 @@ void BaseCommandInterpreter::tick() {
   while (this->m_stream.available()) {
     char c = this->m_stream.read();
     this->m_stream.print(c);
-    if (c == '\n') {
+    if (c == '\n' || c == '\r') {
       m_lastSerialInput.trim();
       this->executeCommand(m_lastSerialInput);
       this->m_lastSerialInput = "";
