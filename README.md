@@ -22,6 +22,7 @@ Add the library to your PlatformIO project by including the following in your `p
 platform = espressif32
 framework = arduino
 lib_deps =
+    https://github.com/PiFou86/Utilify.git
     https://github.com/PiFou86/UtilifyCommandInterpreter.git
 ```
 
