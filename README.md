@@ -145,9 +145,6 @@ CustomCommandInterpreter commandInterpreter(Serial);
 void setup() {
     Serial.begin(115200);
     commandInterpreter.begin();
-
-    // Add a custom command
-    commandInterpreter.addCommand("custom", "<param>");
 }
 ```
 
