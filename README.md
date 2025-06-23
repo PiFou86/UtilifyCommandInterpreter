@@ -146,6 +146,11 @@ void setup() {
     Serial.begin(115200);
     commandInterpreter.begin();
 }
+
+void loop() {
+    // Process incoming serial commands
+    commandInterpreter.tick();
+}
 ```
 
 ### Dependencies
