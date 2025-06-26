@@ -127,12 +127,23 @@ class CustomCommandInterpreter : public BaseCommandInterpreter {
 public:
     CustomCommandInterpreter(Stream &stream) : BaseCommandInterpreter(stream) {
         addCommand("test", "[parameters]");
+        addCommand("switch", "on");
+        addCommand("switch", "off");
     }
     bool interpret(const String &command, const String &parameters) {
         bool error = false;
 
         if (command == "test") {
             Serial.println(String(F("test command executed with parameters: ")) + parameters);
+        } else if (command == "switch") {
+            if (parameters == "on") {
+                Serial.println(F("Switch turned ON"));
+            } else if (parameters == "off") {
+                Serial.println(F("Switch turned OFF"));
+            } else {
+                Serial.println(F("Invalid parameters for switch command"));
+                error = true;
+            }
         } else {
             error = !BaseCommandInterpreter::interpret(command, parameters);
         }
