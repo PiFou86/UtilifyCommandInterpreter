@@ -13,21 +13,36 @@
 #endif
 
 BaseCommandInterpreter::BaseCommandInterpreter(Stream &stream)
-    : m_stream(stream), m_lastSerialInput("") {
-  addCommand("echo", "<message>");
-  addCommand("set", "<key> <value>");
-  addCommand("get", "<key>");
-  addCommand("id", "");
+    : m_stream(stream),
+      m_lastSerialInput(""),
+      m_commands(),
+      m_maxCommandParamLength(0) {
+  addCommand(F("echo"), F("<message>"),
+             F("Echo the <message> message back to the console"));
+  addCommand(F("set"), F("<key> <value>"),
+             F("Set a parameter with <key> to <value>. Use 'get <key>' to see "
+               "the value."));
+  addCommand(F("get"), F("<key>"),
+             F("Get the value of a parameter with <key>."));
+  addCommand(F("id"), F(""),
+             F("Get the device ID."));
 #ifdef ESP32
-  addCommand("reboot", "");
-  addCommand("scan", "i2c");
-  addCommand("scan", "wifi");
-  addCommand("flash", "");
-  addCommand("network", "");
+  addCommand(F("reboot"), F(""),
+             F("Reboot the ESP32."));
+  addCommand(F("scan"), F("i2c"),
+             F("Scan I2C devices."));
+  addCommand(F("scan"), F("wifi"),
+             F("Scan WiFi networks."));
+  addCommand(F("flash"), F(""),
+             F("Display flash information."));
+  addCommand(F("network"), F(""),
+             F("Show network information."));
 #elif ARDUINO_AVR_UNO
-  addCommand("scan", "i2c");
+  addCommand(F("scan"), F("i2c"),
+             F("Scan I2C devices."));
 #endif
-  addCommand("help", "");
+  addCommand(F("help"), F(""),
+             F("Show this help message."));
 }
 
 void BaseCommandInterpreter::begin() {
@@ -48,7 +63,15 @@ void BaseCommandInterpreter::printHelp() {
         m_stream.print(F("  "));
         m_stream.print(this->m_commands[i].command);
         m_stream.print(F(" "));
-        m_stream.println(this->m_commands[i].parameters[j]);
+        m_stream.print(this->m_commands[i].parameters[j].parameter);
+
+        unsigned int padding =
+            m_maxCommandParamLength - this->m_commands[i].command.length() -
+            this->m_commands[i].parameters[j].parameter.length();
+        m_stream.print(StringUtils::padRight("", padding, ' '));
+
+        m_stream.print(F(": "));
+        m_stream.println(this->m_commands[i].parameters[j].help);
       }
     }
   }
@@ -58,15 +81,25 @@ void BaseCommandInterpreter::tick() {
   while (this->m_stream.available()) {
     char c = this->m_stream.read();
     this->m_stream.print(c);
-    if (c == '\n' || c == '\r') {
+    if (c == '\r') {
+      this->m_stream.print(F("\n"));
+      c = '\n';
+    }
+
+    if (c == '\n') {
       m_lastSerialInput.trim();
       this->executeCommand(m_lastSerialInput);
       this->m_lastSerialInput = "";
       m_stream.print(F("# "));
-    } else if (c == '\b') {
+    } else if (c == '\b' ||
+               c == 0x7F) {  // Détection de la touche Backspace et Delete
       if (this->m_lastSerialInput.length() > 0) {
         this->m_lastSerialInput = this->m_lastSerialInput.substring(
             0, this->m_lastSerialInput.length() - 1);
+        if (c == 0x7F) {
+          m_stream.print(F("\b"));
+        }
+        m_stream.print(F(" \b"));
       }
     } else if (c == '\t') {  // Détection de la touche Tab
       handleAutocomplete();
@@ -115,12 +148,24 @@ bool BaseCommandInterpreter::interpret(const String &command,
   }
 #endif
   else if (command == "42") {
-    m_stream.println(F("Beaucoup se sont perdus dans mes ailes; tous n'ont pas vu les mêmes choses, mais la folie était l'une d'entre elles !"));
-    m_stream.println(F("Many have lost themselves in my wings; not all saw the same things, but madness was one of them !"));
-    m_stream.println(F("Muchos se han perdido en mis alas; no todos vieron las mismas cosas, pero la locura fue una de ellas !"));
-    m_stream.println(F("Muitos se perderam em minhas asas; nem todos viram as mesmas coisas, mas a loucura foi uma delas !"));
-    m_stream.println(F("Molti si sono persi nelle mie ali; non tutti hanno visto le stesse cose, ma la follia era una di esse !"));
-    m_stream.println(F("Viele haben sich in meinen Flügeln verloren; nicht alle sahen dasselbe, aber der Wahnsinn war einer davon !"));
+    m_stream.println(
+        F("Beaucoup se sont perdus dans mes ailes; tous n'ont pas vu les mêmes "
+          "choses, mais la folie était l'une d'entre elles !"));
+    m_stream.println(
+        F("Many have lost themselves in my wings; not all saw the same things, "
+          "but madness was one of them !"));
+    m_stream.println(
+        F("Muchos se han perdido en mis alas; no todos vieron las mismas "
+          "cosas, pero la locura fue una de ellas !"));
+    m_stream.println(
+        F("Muitos se perderam em minhas asas; nem todos viram as mesmas "
+          "coisas, mas a loucura foi uma delas !"));
+    m_stream.println(
+        F("Molti si sono persi nelle mie ali; non tutti hanno visto le stesse "
+          "cose, ma la follia era una di esse !"));
+    m_stream.println(
+        F("Viele haben sich in meinen Flügeln verloren; nicht alle sahen "
+          "dasselbe, aber der Wahnsinn war einer davon !"));
   } else if (command == "scan") {
     String deviceType = parameters;
 
@@ -211,7 +256,8 @@ bool BaseCommandInterpreter::setParameter(const String &key,
 }
 
 void BaseCommandInterpreter::addCommand(const String &command,
-                                        const String &parameters) {
+                                        const String &parameters,
+                                        const String &help) {
   int commandIndex = -1;
   for (size_t i = 0; i < this->m_commands.size() && commandIndex == -1; i++) {
     if (this->m_commands[i].command == command) {
@@ -226,24 +272,28 @@ void BaseCommandInterpreter::addCommand(const String &command,
     commandIndex = this->m_commands.size() - 1;
   }
 
-  if (parameters != "") {
-    int parameterIndex = -1;
-    for (size_t i = 0; i < this->m_commands[commandIndex].parameters.size() &&
-                       parameterIndex == -1;
-         i++) {
-      if (this->m_commands[commandIndex].parameters[i] == parameters) {
-        parameterIndex = i;
-      }
+  // if (parameters != "") {
+  int parameterIndex = -1;
+  for (size_t i = 0; i < this->m_commands[commandIndex].parameters.size() &&
+                     parameterIndex == -1;
+       i++) {
+    if (this->m_commands[commandIndex].parameters[i].parameter == parameters) {
+      parameterIndex = i;
     }
-    if (parameterIndex == -1) {
-      this->m_commands[commandIndex].parameters.push_back(parameters);
-    }
+  }
+  if (parameterIndex == -1) {
+    this->m_commands[commandIndex].parameters.push_back({parameters, help});
+  }
+  //}
+
+  unsigned int commandParamLength = command.length() + 1 + parameters.length();
+  if (commandParamLength > m_maxCommandParamLength) {
+    m_maxCommandParamLength = commandParamLength;
   }
 }
 
 void BaseCommandInterpreter::handleAutocomplete() {
   String input = m_lastSerialInput;
-  input.trim();
 
   int spaceIndex = input.indexOf(' ');
   String mainCommand = input;
@@ -256,7 +306,7 @@ void BaseCommandInterpreter::handleAutocomplete() {
 
   vector<String> matches;
 
-  if (subCommand == "") {
+  if (spaceIndex == -1) {
     for (size_t i = 0; i < m_commands.size(); i++) {
       if (m_commands[i].command.startsWith(mainCommand)) {
         matches.push_back(m_commands[i].command);
@@ -266,8 +316,8 @@ void BaseCommandInterpreter::handleAutocomplete() {
     for (size_t i = 0; i < m_commands.size(); i++) {
       if (m_commands[i].command == mainCommand) {
         for (size_t j = 0; j < m_commands[i].parameters.size(); j++) {
-          if (m_commands[i].parameters[j].startsWith(subCommand)) {
-            matches.push_back(m_commands[i].parameters[j]);
+          if (m_commands[i].parameters[j].parameter.startsWith(subCommand)) {
+            matches.push_back(m_commands[i].parameters[j].parameter);
           }
         }
         break;
@@ -279,12 +329,13 @@ void BaseCommandInterpreter::handleAutocomplete() {
   //   m_stream.println(F("\nNo matches found"));
   // } else
   if (matches.size() == 1) {
-    if (subCommand == "") {
+    if (spaceIndex == -1 && subCommand == "") {
       m_lastSerialInput = matches[0] + " ";
     } else {
       m_lastSerialInput = mainCommand + " " + matches[0] + " ";
     }
-    m_stream.print("\r# ");
+
+    m_stream.print("\r\n# ");
     m_stream.print(m_lastSerialInput);
   } else {
     m_stream.println();

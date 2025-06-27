@@ -11,10 +11,15 @@
 
 #include <Utilify/BasicVector.h>
 
+struct Parameter {
+  String parameter;
+  String help;
+};
+
 struct Command {
  public:
   String command;
-  vector<String> parameters;
+  vector<Parameter> parameters;
 };
 
 class BaseCommandInterpreter {
@@ -22,6 +27,7 @@ class BaseCommandInterpreter {
   Stream &m_stream;
   String m_lastSerialInput;
   vector<Command> m_commands;
+  unsigned int m_maxCommandParamLength = 0;
 
   void handleAutocomplete();
 
@@ -29,7 +35,8 @@ class BaseCommandInterpreter {
   virtual bool interpret(const String &command, const String &parameters);
   virtual bool getParameter(const String &key);
   virtual bool setParameter(const String &key, const String &value);
-  void addCommand(const String &command, const String &parameters);
+  void addCommand(const String &command, const String &parameters, 
+                  const String &help);
   virtual void printHelp();
 
  public:

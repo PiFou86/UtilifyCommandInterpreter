@@ -121,47 +121,64 @@ You can extend the library by adding custom commands and their behavior.
 For example:
 
 ```cpp
+#include <Arduino.h>
+
 #include <Utilify/CommandInterpreter/BaseCommandInterpreter.h>
 
 class CustomCommandInterpreter : public BaseCommandInterpreter {
-public:
-    CustomCommandInterpreter(Stream &stream) : BaseCommandInterpreter(stream) {
-        addCommand("test", "[parameters]");
-        addCommand("switch", "on");
-        addCommand("switch", "off");
-    }
-    bool interpret(const String &command, const String &parameters) {
-        bool error = false;
+ protected:
+  virtual bool interpret(const String &command,
+                         const String &parameters) override {
+    bool error = false;
 
-        if (command == "test") {
-            Serial.println(String(F("test command executed with parameters: ")) + parameters);
-        } else if (command == "switch") {
-            if (parameters == "on") {
-                Serial.println(F("Switch turned ON"));
-            } else if (parameters == "off") {
-                Serial.println(F("Switch turned OFF"));
-            } else {
-                Serial.println(F("Invalid parameters for switch command"));
-                error = true;
-            }
-        } else {
-            error = !BaseCommandInterpreter::interpret(command, parameters);
-        }
-
-        return !error;
+    if (command == "test") {
+      Serial.print(F("test command executed with parameters: "));
+      Serial.println(parameters);
+    } else if (command == "switch") {
+      if (parameters == "on") {
+        Serial.println(F("Switch turned ON"));
+        digitalWrite(LED_BUILTIN, HIGH);  // Turn on the built-in LED
+      } else if (parameters == "off") {
+        Serial.println(F("Switch turned OFF"));
+        digitalWrite(LED_BUILTIN, LOW);  // Turn off the built-in LED
+      } else {
+        Serial.println(F("Invalid parameters for switch command"));
+        error = true;
+      }
+    } else {
+      error = !BaseCommandInterpreter::interpret(command, parameters);
     }
+
+    return !error;
+  }
+  virtual bool getParameter(const String &key) override {
+    // Custom code here to handle custom keys and values
+    return BaseCommandInterpreter::getParameter(key);
+  }
+  virtual bool setParameter(const String &key, const String &value) override {
+    // Custom code here to handle custom keys and values
+    return BaseCommandInterpreter::setParameter(key, value);
+  }
+
+ public:
+  CustomCommandInterpreter(Stream &stream) : BaseCommandInterpreter(stream) {
+    addCommand(F("test"), F("<parameters>"),
+               F("Test command that prints the <parameters> to the console"));
+    addCommand(F("switch"), F("on"), F("Turn the built-in LED ON"));
+    addCommand(F("switch"), F("off"), F("Turn the built-in LED OFF"));
+
+    pinMode(LED_BUILTIN, OUTPUT);
+  }
 };
 
 CustomCommandInterpreter commandInterpreter(Serial);
 void setup() {
-    Serial.begin(115200);
-    commandInterpreter.begin();
+  Serial.begin(115200);
+
+  commandInterpreter.begin();
 }
 
-void loop() {
-    // Process incoming serial commands
-    commandInterpreter.tick();
-}
+void loop() { commandInterpreter.tick(); }
 ```
 
 ### Dependencies
