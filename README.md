@@ -23,6 +23,9 @@ Add the library to your PlatformIO project by including the following in your `p
 lib_deps =
     sirdrako/Utilify
     sirdrako/UtilifyCommandInterpreter
+
+; for ESP32 add :
+    Wire
 ```
 
 ### Basic Usage
