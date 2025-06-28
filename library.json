@@ -1,6 +1,6 @@
 {
   "name": "UtilifyCommandInterpreter",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Utilify Command Interpreter is a lightweight and flexible library for parsing and executing commands on ESP32 and Arduino Uno. Designed for embedded systems, it provides an intuitive way to define and handle commands, enabling efficient communication between devices and users. It supports serial input and can be extended for custom implementations.",
   "keywords": [
     "command interpreter",
