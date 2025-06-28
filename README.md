@@ -20,12 +20,9 @@ UtilifyCommandInterpreter is a lightweight and flexible library designed for ESP
 Add the library to your PlatformIO project by including the following in your `platformio.ini` file:
 
 ```ini
-[env:esp32dev]
-platform = espressif32
-framework = arduino
 lib_deps =
-    https://github.com/PiFou86/Utilify.git
-    https://github.com/PiFou86/UtilifyCommandInterpreter.git
+    sirdrako/Utilify
+    sirdrako/UtilifyCommandInterpreter
 ```
 
 ### Basic Usage
