@@ -2,6 +2,8 @@
 
 UtilifyCommandInterpreter is a lightweight and flexible library designed for ESP32 and Arduino Uno. It provides an intuitive command-line interface for embedded systems, enabling users to interact with devices via serial input. Define, parse, and execute custom commands efficiently with this library.
 
+[![PlatformIO Registry](https://badges.registry.platformio.org/packages/sirdrako/library/UtilifyCommandInterpreter.svg)](https://registry.platformio.org/libraries/sirdrako/UtilifyCommandInterpreter)
+
 ## Features
 
 - Lightweight and easy to integrate.
