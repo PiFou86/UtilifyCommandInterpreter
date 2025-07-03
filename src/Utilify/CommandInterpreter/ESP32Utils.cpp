@@ -1,6 +1,5 @@
 
 #ifdef ESP32
-#include <ESP.h>
 
 #include <WiFi.h>
 #include <esp_wifi.h>
